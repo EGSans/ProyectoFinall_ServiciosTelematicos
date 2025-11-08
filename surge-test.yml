@@ -1,0 +1,21 @@
+config:
+  target: "http://192.168.50.30"
+  phases:
+    - duration: 30
+      arrivalRate: 5        # Tráfico bajito
+    - duration: 20
+      arrivalRate: 5
+      rampTo: 100           # Subida rápida (surge)
+    - duration: 60
+      arrivalRate: 100      # Pico sostenido
+    - duration: 30
+      arrivalRate: 10       # Bajada
+  http:
+    timeout: 10
+  ensure:
+    maxErrorRate: 5
+scenarios:
+  - name: "Explorador Rick & Morty"
+    flow:
+      - get:
+          url: "/"

@@ -1,0 +1,14 @@
+config:
+  target: "http://192.168.50.30"
+  phases:
+    - duration: 900    # 15 minutos
+      arrivalRate: 20
+  http:
+    timeout: 10
+  ensure:
+    maxErrorRate: 5
+scenarios:
+  - name: "Soak Rick & Morty"
+    flow:
+      - get:
+          url: "/"
