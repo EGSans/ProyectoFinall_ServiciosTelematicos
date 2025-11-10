@@ -30,6 +30,7 @@ La solución implementada se compone de tres nodos virtualizados interconectados
 
 - VirtualBox 6.1 o superior
 - Vagrant 2.2 o superior
+- Node.js 14+ y npm (para Artillery y scripts de análisis)
 - Artillery (para pruebas de carga)
 - Conexión a internet para descarga de boxes
 
@@ -151,10 +152,78 @@ artillery run --output report-surge-test.json surge-test.yml
 
 ### Generación de Reportes
 ```bash
+# Generar reporte HTML visual
 artillery report report-heavy-medio.json
 ```
 
 Este comando genera un reporte HTML detallado con gráficas de rendimiento.
+
+### Análisis de Resultados con Script Personalizado
+
+El proyecto incluye un script Node.js que procesa automáticamente los archivos JSON de Artillery y extrae las métricas más relevantes:
+```bash
+# Analizar resultados de una prueba específica
+node resumen-artillery.js report-heavy-medio.json
+
+# Analizar múltiples pruebas
+node resumen-artillery.js report-soak-test.json
+node resumen-artillery.js report-surge-test.json
+```
+
+#### Salida del Script
+
+El script `resumen-artillery.js` genera dos tipos de salida:
+
+**1. Formato Legible en Consola:**
+```
+📊 Resumen de la prueba: report-heavy-medio.json
+====================================
+Total de Requests       : 1500
+Respuestas 200 OK       : 1500
+Errores totales         : 0
+% de error              : 0.00%
+Tipo(s) de error        : Ninguno
+RPS promedio            : 25.0 req/s
+
+⏱️ Latencias (ms – http.response_time)
+  min   : 45
+  p50   : 180
+  p95   : 320
+  max   : 450
+  media : 180.0
+```
+
+**2. Formato CSV para Análisis:**
+```csv
+file,requests,ok,errors,errors_pct,error_types,rps_mean,lat_min,lat_p50,lat_p95,lat_max
+report-heavy-medio.json,1500,1500,0,0.00,"Ninguno",25,45,180,320,450
+```
+
+#### Métricas Analizadas
+
+El script extrae y calcula:
+- **Total de Requests**: Número total de peticiones HTTP realizadas
+- **Respuestas 200 OK**: Peticiones exitosas
+- **Errores totales**: Número de peticiones fallidas
+- **Porcentaje de error**: Tasa de error calculada
+- **Tipos de error**: Clasificación de errores encontrados
+- **RPS promedio**: Peticiones por segundo promedio
+- **Latencias**: Estadísticas de tiempo de respuesta (min, p50, p95, max, media)
+
+#### Consolidación de Resultados
+
+Para comparar múltiples pruebas, puede redirigir la salida CSV a un archivo:
+```bash
+# Crear archivo CSV consolidado
+echo "file,requests,ok,errors,errors_pct,error_types,rps_mean,lat_min,lat_p50,lat_p95,lat_max" > resultados-consolidados.csv
+
+# Agregar resultados de cada prueba
+node resumen-artillery.js report-heavy-medio.json | tail -1 >> resultados-consolidados.csv
+node resumen-artillery.js report-heavy-api.json | tail -1 >> resultados-consolidados.csv
+node resumen-artillery.js report-heavy-db.json | tail -1 >> resultados-consolidados.csv
+node resumen-artillery.js report-soak-test.json | tail -1 >> resultados-consolidados.csv
+node resumen-artillery.js report-surge-test.json | tail -1 >> resultados-consolidados.csv
+```
 
 ## Resultados de Pruebas
 
@@ -244,6 +313,20 @@ vb.memory = 2048
 vb.cpus   = 2
 ```
 
+### Error al ejecutar resumen-artillery.js
+
+Si el script no se ejecuta correctamente:
+```bash
+# Verificar que Node.js esté instalado
+node --version
+
+# Verificar que el archivo JSON existe
+ls -l report-*.json
+
+# Verificar permisos del script
+chmod +x resumen-artillery.js
+```
+
 ## Tecnologías Utilizadas
 
 - Ubuntu Server 20.04 LTS
@@ -252,6 +335,7 @@ vb.cpus   = 2
 - Vagrant 2.2+
 - VirtualBox 6.1+
 - Artillery (Node.js)
+- Node.js 14+ (para scripts de análisis)
 
 ## Referencias
 
