@@ -9,7 +9,7 @@
 **Autores:**
 - Juan Sebastian Ballesteros Sierra (2200405)
 - Juan Esteban Salazar Toro (2221681)
-
+- Jean Paul Ordoñez Ibarguen (2221275)
 ## Descripción
 
 Este proyecto implementa un clúster web con balanceo de carga utilizando Apache mod_proxy_balancer en un entorno virtualizado. La infraestructura consta de tres máquinas virtuales Ubuntu Server 20.04 LTS orquestadas con Vagrant y VirtualBox, diseñadas para demostrar los principios de alta disponibilidad y distribución de carga en sistemas distribuidos.
